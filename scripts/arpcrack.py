@@ -102,9 +102,9 @@ def send_arp_packet(packet, interface):
 
 def check_option_parser(parser):
     (options, args) = parser.parse_args()
-    # if len(args) != 1 or options.interface is None:
-    #     parser.print_help()
-    #     sys.exit(0)
+    if len(args) != 1 or options.interface is None:
+        parser.print_help()
+        sys.exit(0)
 
     return options, args
 
