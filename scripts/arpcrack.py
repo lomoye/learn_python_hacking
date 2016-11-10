@@ -40,45 +40,31 @@ def build_req_packet(options, args):
     :param args: 请求参数
     """
     mac = get_if_hwaddr(options.interface)
-
     if options.target is None:
-
-        pkt = Ether(src=mac, dst='ff:ff:ff:ff:ff:ff') / ARP(hwsrc=mac, psrc=args[0], pdst=args[0])
-
-    elif options.target:
-
+        packet = Ether(src=mac, dst='ff:ff:ff:ff:ff:ff') / ARP(hwsrc=mac, psrc=args[0], pdst=args[0])
+    else:
         target_mac = getmacbyip(options.target)
-
         if target_mac is None:
             print "[-] Error: Could not resolve targets MAC address"
-
             sys.exit(1)
+        packet = Ether(src=mac, dst=target_mac) / ARP(hwsrc=mac, psrc=args[0], hwdst=target_mac, pdst=options.target)
 
-        pkt = Ether(src=mac, dst=target_mac) / ARP(hwsrc=mac, psrc=args[0], hwdst=target_mac, pdst=options.target)
-
-    return pkt
+    return packet
 
 
 def build_resp_packet(options, args):
     mac = get_if_hwaddr(options.interface)
-
     if options.target is None:
-
-        pkt = Ether(src=mac, dst='ff:ff:ff:ff:ff:ff') / ARP(hwsrc=mac, psrc=args[0], op=2)
-
-    elif options.target:
-
+        packet = Ether(src=mac, dst='ff:ff:ff:ff:ff:ff') / ARP(hwsrc=mac, psrc=args[0], op=2)
+    else:
         target_mac = getmacbyip(options.target)
-
         if target_mac is None:
             print "[-] Error: Could not resolve targets MAC address"
-
             sys.exit(1)
+        packet = Ether(src=mac, dst=target_mac) / ARP(hwsrc=mac, psrc=args[0], hwdst=target_mac, pdst=options.target,
+                                                      op=2)
 
-        pkt = Ether(src=mac, dst=target_mac) / ARP(hwsrc=mac, psrc=args[0], hwdst=target_mac, pdst=options.target,
-                                                   op=2)
-
-    return pkt
+    return packet
 
 
 def confirm_send_packet(options, packet):
